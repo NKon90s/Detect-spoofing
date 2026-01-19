@@ -5,6 +5,14 @@ import pandas as pd
 import georinex as gr
 import re
 
+######################################################################
+#
+#  The purpose of this code is to convert rinex files into 
+#  CSV format, that can be used for training machine learning 
+#  modells. The code converts .obs and .nav files into CSV format.
+#
+######################################################################
+
 class RinexToCSV_Converter:
 
     def __init__(self, obs_path: str, nav_path: Optional[str] = None):
@@ -157,21 +165,6 @@ class RinexToCSV_Converter:
         return c / f
 
 
-
-
-if __name__ == "__main__":
-    converter = RinexToCSV_Converter(obs_path ="Oct27log1.obs", nav_path="Oct27log1.nav")
-    obs = converter.load_obs(converter.obs_path)
-    df = converter.extract_features(obs)
-    df_obs = converter.add_derived_features(df)
-
-    df_obs.to_csv("obs_Oct27log1.csv", index=False)
-
-    # Convert to DataFrame for inspection
-    nav_ds = converter.load_nav(converter.nav_path)
-    df_nav = nav_ds.to_dataframe().reset_index()
-    df_nav.to_csv("nav_Oct27log1.csv", index=False)
-  
 
 
 
