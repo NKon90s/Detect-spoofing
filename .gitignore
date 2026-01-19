@@ -16,7 +16,5 @@ build/
 .ipynb_checkpoints/
 
 # Specific files
-*.obs
-*.nav
 *.txt
 *.csv
