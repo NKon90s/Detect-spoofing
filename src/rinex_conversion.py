@@ -123,7 +123,15 @@ class RinexToCSV_Converter:
         df2 = df2.merge(epoch_stats, left_on="time", right_index=True, how="left")
         return df2
 
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+
+=======
+ 
+>>>>>>> 0f3322b (Added rinex conversion)
+>>>>>>> 674b53d (Added rinex conversion)
     # Load the NAV file for potential future use
     def load_nav(self, nav_path):
         print(f"Loading RINEX navigation: {nav_path}")
@@ -148,6 +156,13 @@ class RinexToCSV_Converter:
                     break  # stop after header
         return fcn_dict
     
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+    # Calculate wavelenght for GLONASS
+>>>>>>> 0f3322b (Added rinex conversion)
+>>>>>>> 674b53d (Added rinex conversion)
     def glonass_wavelength(self, K):
         c = 299792458.0
         f0 = 1602.0e6
