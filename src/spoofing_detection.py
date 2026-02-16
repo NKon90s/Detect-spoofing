@@ -6,6 +6,7 @@ from sklearn.metrics import f1_score, roc_auc_score, average_precision_score
 from xgboost import XGBClassifier
 from imblearn.over_sampling import SMOTE
 import optuna
+import joblib
  
 
 #######################################################################
@@ -40,11 +41,17 @@ def add_extra_features(df):
 
 df = add_extra_features(df)
 
-# ================================
-# 2. Encoding Category Variables 
-# ================================
+# ===============================================
+# 2. Encoding Category Variables and saving them
+# ===============================================
+encoders = {}
 for col in ["sys", "sv", "prn"]:
-    df[col] = LabelEncoder().fit_transform(df[col].astype(str))
+    le = LabelEncoder()
+    df[col] = le.fit_transform(df[col].astype(str))
+    encoders[col] = le
+
+# saving the encoders
+joblib.dump(encoders, "label_encoders.joblib")
 
 # Missing values in numeric form
 df_all = df.fillna(-9999)
@@ -182,7 +189,6 @@ print("\nSaved: gnss_test_predictions_optuna.csv")
 # ============================================================
 # 9. Exporting the modell
 # ============================================================
-import joblib
 
 joblib.dump(best_model, "gnss_xgboost_model.joblib")
 #print("Model saved as gnss_xgboost_model.joblib")
