@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
  
 # Add a few extra parameters that helps classification
 def add_extra_features(df):
@@ -15,6 +14,9 @@ def preProcess(df):
     if "time" in df.columns:
         df["time"] = pd.to_datetime(df["time"])
 
+    # Clipping anomalies/too large values
+    df['doppler_vs_prrate'] = df['doppler_vs_prrate'].clip(-2000, 2000)
+
     # add_extra_features
     df = add_extra_features(df)
 
@@ -24,7 +26,7 @@ def preProcess(df):
     # Fill missing
     df = df.fillna(-9999)
 
-    drop_cols = ["time", "attack_label", "attack_type", "time_utc", "sv", "prn"]
+    drop_cols = ["time", "attack_label", "attack_type", "time_utc","sv", "prn"]
     X = df.drop(columns=drop_cols, errors="ignore")
 
     return X, df
