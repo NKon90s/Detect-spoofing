@@ -9,7 +9,7 @@ import optuna
 import joblib
 
 import matplotlib.pyplot as plt
- 
+
 
 #######################################################################
 #
@@ -85,7 +85,7 @@ y_test = df_test["attack_label"]
 # =====================================
 sm = SMOTE(random_state=42)
 X_train_res, y_train_res = sm.fit_resample(X_train, y_train)
-#print(f"After SMOTE, train distribution:\n{pd.Series(y_train_res).value_counts()}")
+print(f"After SMOTE, train distribution:\n{pd.Series(y_train_res).value_counts()}")
 
 # ============================================================
 # 6. Optuna hyperparameter tuning
@@ -171,7 +171,7 @@ print(f"PR-AUC: {pr_auc:.3f}")
 
 
 # ============================================================
-# 8. Save predictions
+# 9. Save predictions
 # ============================================================
 out = df_test.copy()
 out["pred_attack"] = y_pred
@@ -182,11 +182,11 @@ print("\nSaved: gnss_test_predictions_optuna.csv")
 
 
 # ============================================================
-# 9. Exporting the modell
+# 10. Exporting the modell
 # ============================================================
 
 joblib.dump(best_model, "gnss_xgboost_model.joblib")
-#print("Model saved as gnss_xgboost_model.joblib")
+print("Model saved as gnss_xgboost_model.joblib")
 
 
 
