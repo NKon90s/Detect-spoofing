@@ -2,11 +2,13 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import TimeSeriesSplit
-from sklearn.metrics import f1_score, roc_auc_score, average_precision_score
+from sklearn.metrics import f1_score, roc_auc_score, average_precision_score, confusion_matrix, ConfusionMatrixDisplay
 from xgboost import XGBClassifier
 from imblearn.over_sampling import SMOTE
 import optuna
 import joblib
+
+import matplotlib.pyplot as plt
  
 
 #######################################################################
@@ -42,16 +44,9 @@ def add_extra_features(df):
 df = add_extra_features(df)
 
 # ===============================================
-# 2. Encoding Category Variables and saving them
+# 2. Encoding sys Variables and saving them
 # ===============================================
-encoders = {}
-for col in ["sys", "sv", "prn"]:
-    le = LabelEncoder()
-    df[col] = le.fit_transform(df[col].astype(str))
-    encoders[col] = le
-
-# saving the encoders
-joblib.dump(encoders, "label_encoders.joblib")
+df["sys"] = df["sys"].map({"G": 0, "R": 1, "E": 2})
 
 # Missing values in numeric form
 df_all = df.fillna(-9999)
@@ -78,7 +73,7 @@ print("Test class distribution:\n", df_test["attack_label"].value_counts())
 # =================================
 # 4. Separating function and goal
 # =================================
-drop_cols = ["time", "attack_label", "attack_type", "time_utc"]
+drop_cols = ["time", "attack_label", "attack_type", "time_utc","sv", "prn"]
 X_train = df_train.drop(columns=drop_cols, errors="ignore")
 y_train = df_train["attack_label"]
 X_test = df_test.drop(columns=drop_cols, errors="ignore")
@@ -194,3 +189,99 @@ joblib.dump(best_model, "gnss_xgboost_model.joblib")
 #print("Model saved as gnss_xgboost_model.joblib")
 
 
+
+# -------------------------------
+# Confusion Matrix
+# -------------------------------
+cm = confusion_matrix(y_test, y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Tiszta", "Hamisított"])
+
+plt.figure(figsize=(6,6))
+disp.plot(values_format='d', cmap="Blues")
+plt.title("Konfúziós Mátrix - Hamisítás Felismerés")
+plt.show()
+
+print("\nConfusion Matrix:")
+print(cm)
+
+tn, fp, fn, tp = cm.ravel()
+
+print(f"""
+True Negatives  (Clean correctly identified):   {tn}
+False Positives (Clean → Spoofed):             {fp}
+False Negatives (Spoofed → Clean):             {fn}
+True Positives  (Spoofed correctly identified): {tp}
+""")
+
+
+
+# ============================================================
+# 8. F1 / ROC-AUC / PR-AUC LINE PLOT (OPTION 2)
+# ============================================================
+metric_names = ["F1-score", "PR-AUC", "ROC-AUC"]
+metric_values = [f1, pr_auc, roc_auc]
+
+plt.figure(figsize=(6.5,4))
+plt.plot(metric_names, metric_values, marker="o", linewidth=2)
+plt.ylim(0, 1)
+plt.ylabel("Score")
+plt.xlabel("Metric")
+plt.title("Model Performance Metrics")
+plt.grid(True)
+
+# Annotate values above points
+for x, y in zip(metric_names, metric_values):
+    plt.text(x, y + 0.03, f"{y:.3f}", ha='center', fontsize=10)
+
+plt.tight_layout()
+plt.show()
+
+# ============================================================
+# 9. ROC CURVE
+# ============================================================
+from sklearn.metrics import RocCurveDisplay, PrecisionRecallDisplay
+
+disp = RocCurveDisplay.from_predictions(y_test, y_proba)
+disp.ax_.set_title("ROC görbe - Osztályozási Teljesítmény")
+disp.ax_.set_xlabel("Hamis pozitív arány (FPR)")
+disp.ax_.set_ylabel("Valós pozitív arány (TPR)")
+plt.grid(True)
+plt.show()
+
+
+# ============================================================
+# 10. PRECISION-RECALL CURVE
+# ============================================================
+disp = PrecisionRecallDisplay.from_predictions(y_test, y_proba)
+disp.ax_.set_title("PR görbe")
+disp.ax_.set_xlabel("Visszahívás (Recall)")
+disp.ax_.set_ylabel("Pontosság (Precision)")
+plt.grid(True)
+plt.show()
+
+
+# ============================================================
+# 11. F1-SCORE vs THRESHOLD CURVE
+# ============================================================
+thresholds = np.linspace(0, 1, 200)
+f1_scores = [f1_score(y_test, (y_proba > t).astype(int)) for t in thresholds]
+
+plt.figure(figsize=(6.5,4))
+plt.plot(thresholds, f1_scores, label="F1-pontszám")
+
+plt.xlabel("Döntési küszöb")
+plt.ylabel("F1-pontszám")
+plt.title("F1-pontszám vs küszöbérték")
+plt.grid(True)
+
+# Legjobb pont
+best_t = thresholds[np.argmax(f1_scores)]
+best_f1 = max(f1_scores)
+
+plt.scatter(best_t, best_f1, color="red", s=40, label=f"Legjobb: t={best_t:.2f}, F1={best_f1:.3f}")
+
+# Legend kisebb betűmérettel
+plt.legend(fontsize=9, loc="lower center")
+
+plt.tight_layout()
+plt.show()
