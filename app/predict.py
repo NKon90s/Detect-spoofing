@@ -2,7 +2,6 @@ import pandas as pd
 import joblib
 from preprocess import preProcess
 
-
 MODEL_PATH = "gnss_xgboost_model.joblib"
 THRESHOLD = 0.4
 
@@ -23,4 +22,4 @@ def predict(csv_path, out_path):
     print(f"Saved predictions to {out_path}")
 
 if __name__ == "__main__":
-    predict("obs_Oct21log7_spoofed.csv", "predictions.csv")
+    predict("obs_Oct21log8_spoofed.csv", "predictions.csv")
