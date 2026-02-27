@@ -44,7 +44,7 @@ def add_extra_features(df):
 df = add_extra_features(df)
 
 # ===============================================
-# 2. Encoding sys Variables and saving them
+# 2. Encoding sys Variables 
 # ===============================================
 df["sys"] = df["sys"].map({"G": 0, "R": 1, "E": 2})
 
@@ -194,11 +194,11 @@ print("Model saved as gnss_xgboost_model.joblib")
 # Confusion Matrix
 # -------------------------------
 cm = confusion_matrix(y_test, y_pred)
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Tiszta", "Hamisított"])
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Clean", "Spoofed"])
 
 plt.figure(figsize=(6,6))
 disp.plot(values_format='d', cmap="Blues")
-plt.title("Konfúziós Mátrix - Hamisítás Felismerés")
+plt.title("Confusion Matrix - Spoofing Detection")
 plt.show()
 
 print("\nConfusion Matrix:")
@@ -242,9 +242,9 @@ plt.show()
 from sklearn.metrics import RocCurveDisplay, PrecisionRecallDisplay
 
 disp = RocCurveDisplay.from_predictions(y_test, y_proba)
-disp.ax_.set_title("ROC görbe - Osztályozási Teljesítmény")
-disp.ax_.set_xlabel("Hamis pozitív arány (FPR)")
-disp.ax_.set_ylabel("Valós pozitív arány (TPR)")
+disp.ax_.set_title("ROC curve - Classification Performance")
+disp.ax_.set_xlabel("False Positive Ratio (FPR)")
+disp.ax_.set_ylabel("True Positive Ratio (TPR)")
 plt.grid(True)
 plt.show()
 
@@ -253,9 +253,9 @@ plt.show()
 # 10. PRECISION-RECALL CURVE
 # ============================================================
 disp = PrecisionRecallDisplay.from_predictions(y_test, y_proba)
-disp.ax_.set_title("PR görbe")
-disp.ax_.set_xlabel("Visszahívás (Recall)")
-disp.ax_.set_ylabel("Pontosság (Precision)")
+disp.ax_.set_title("PR curve")
+disp.ax_.set_xlabel("Recall")
+disp.ax_.set_ylabel("Precision")
 plt.grid(True)
 plt.show()
 
@@ -267,18 +267,18 @@ thresholds = np.linspace(0, 1, 200)
 f1_scores = [f1_score(y_test, (y_proba > t).astype(int)) for t in thresholds]
 
 plt.figure(figsize=(6.5,4))
-plt.plot(thresholds, f1_scores, label="F1-pontszám")
+plt.plot(thresholds, f1_scores, label="F1-score")
 
-plt.xlabel("Döntési küszöb")
-plt.ylabel("F1-pontszám")
-plt.title("F1-pontszám vs küszöbérték")
+plt.xlabel("Decesion threshold")
+plt.ylabel("F1-score")
+plt.title("F1-score vs threshold")
 plt.grid(True)
 
 # Legjobb pont
 best_t = thresholds[np.argmax(f1_scores)]
 best_f1 = max(f1_scores)
 
-plt.scatter(best_t, best_f1, color="red", s=40, label=f"Legjobb: t={best_t:.2f}, F1={best_f1:.3f}")
+plt.scatter(best_t, best_f1, color="red", s=40, label=f"Best: t={best_t:.2f}, F1={best_f1:.3f}")
 
 # Legend kisebb betűmérettel
 plt.legend(fontsize=9, loc="lower center")
