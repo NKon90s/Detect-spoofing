@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 #  the gnss satellites' signal is spoofed or not. It is performing the
 #  check on a raw obs data converted into rinex, then into csv format.
 #
-#  Below is the code of the detection modell.
+#  Below is the code that was used to train the detection modell.
 #
 #######################################################################
 
