@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import georinex as gr
 import re
-
+ 
 ######################################################################
 #
 #  The purpose of this code is to convert rinex files into 
