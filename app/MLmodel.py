@@ -4,20 +4,18 @@ from pydantic import BaseModel, ValidationError, Field
 from typing import Annotated
 from predict import predict
 import uvicorn
+from src import rinex_conversion as rx
+from pathlib import Path
 
-#####################################################
-#
-#  
-#
-#####################################################
 
+# Creating a FastAPI app
 app = FastAPI(
     title="GNSS Signal Spoofing Detector",
     description="Predicts if a GNSS signal is spoofed/manipulated",
     version="1.0.0"
 )
 
-# Creating a class to validate the inputs for our prediction model
+# Defining input schema using Pydantic
 class DataInput(BaseModel):
     time_utc: Annotated[object | None, Field(description="Data and time of recording in UTC")]
     time: Annotated[object | None, Field(description="Data and time of recording based on system time")]
@@ -40,12 +38,47 @@ class DataInput(BaseModel):
     n_missing_pr: Annotated[int | None, Field(description="Number of missing pseudoranges")]
 
 
+    class Config:
+        schema_extra = {
+            "example": {
+                "time_utc": "2025-10-27T21:15:42",
+                "time": "2025.10.27 21:15",
+                "sys": "G",
+                "sv": "G05",
+                "prn": 5,
+                "pseudorange": 19999103.134,
+                "phase": 104845425.919,
+                "doppler": -475.204,
+                "snr": 21.0,
+                "time_s": 1761599743,
+                "delta_t": 1.0,
+                "delta_pr": 92.10201301303,
+                "pr_rate": 93.1201201,
+                "wavelength": 0.190293672798365,
+                "doppler_vs_prrate": 4.206735463463,
+                "snr_mean_5": 18.0,
+                "snr_std_5": 1.25677,
+                "sat_count": 19,
+                "n_missing_pr": 15
+            }
+        }
+
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the Signal Spoofing Detection API."}
 
 
 @app.post("/predict", response_model=DataInput)
 def start_prediction():
-    predict()
     
+    predict()
+
+
+@app.get("/health")
+def health_check():
+    """Health check endpoint to verify API is running"""
+    return {"status": "healthy"}
 
 
 if __name__ == "__main__":
