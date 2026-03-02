@@ -21,5 +21,4 @@ def predict(csv_path, out_path):
     df_proc.to_csv(out_path, index=False)
     print(f"Saved predictions to {out_path}")
 
-if __name__ == "__main__":
-    predict("obs_Oct27log3_spoofed.csv", "predictions.csv")
+
