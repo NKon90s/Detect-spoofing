@@ -5,20 +5,11 @@ Global Navigation Satellite Systems (GNSS) have become a fundamental technologic
 
 The aim of this project was to research the possiblities of detecting spoofing with machine learning algorithms, especially `XGBoost` algorithm. The results are promising. Machnie learning can be of help in identifying spoofed signals, especially combined with other detection techniques. 
 
-## Dependencies 
+## Requirements 
 
-The following python modules were used for the project
-- `Numpy`
-- `Pandas`
-- `Georinex`
-- `Scikit-learn`
-- `Xgboost`
-- `Imblearn`
-- `Optuna`
-- `Joblib`
-- `Matplotlib`
+For specific requirements and dependencies, please read the `requirements.txt` file.
 
-The easiest way is to install and use them is the `pip install` method. E.g: `pip install pandas`
+The easiest way to install and apply them is the `pip install` method. E.g: `pip install pandas`
 
 ## Dataset 
 
