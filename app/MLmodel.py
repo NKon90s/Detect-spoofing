@@ -84,6 +84,7 @@ class PredictionResponse(BaseModel):
     spoofing_ratio: float
     is_spoofed: str
 
+
 # Class for validating uploaded file. File should be csv file and match with 'DataInput' schema.
 class ValidateFile:
 
@@ -114,7 +115,7 @@ class ValidateFile:
             records = df.to_dict(orient = "records")
         except Exception as e:
                 raise HTTPException(400, f"Invalid CSV format: {str(e)}")
- 
+
         validated_rows = []
         invalid_rows = []
         for i, row in enumerate(records):
@@ -124,10 +125,9 @@ class ValidateFile:
                     invalid_rows.append({f"row": row, "errors": e.errors()})
                 
         if invalid_rows:
-            raise HTTPException(status_code=422, detail=f"Row {i+1} validation error: {e.errors()}")
-
+            raise HTTPException(status_code=422, detail="Invalid content in Uploaded File")
+        
         await file.seek(0)
-
         return df
             
  
@@ -140,17 +140,21 @@ async def start_prediction(df: pd.DataFrame = Depends(ValidateFile())):
     spoofed_count = len(prediction[prediction["pred_attack"] == 1])
     total_samples = len(prediction)
     spoofing_ratio = round(spoofed_count/total_samples, 2)
+    spoofed_samples = prediction[prediction["pred_attack"] == 1]
+    avg_spoofing_ratio = spoofed_samples["attack_probability"].mean()
 
     return PredictionResponse(
-        total_samples=total_samples,
-        spoofed_count=spoofed_count,
-        spoofing_ratio=spoofing_ratio,
-        is_spoofed="Signal is likely spoofed" if spoofing_ratio > SPOOFING_THRESHOLD else "Signal is likely not spoofed"
+        total_samples = total_samples,
+        spoofed_count = spoofed_count,
+        spoofing_ratio = spoofing_ratio,
+        is_spoofed = "Signal is likely spoofed" if avg_spoofing_ratio > SPOOFING_THRESHOLD else "Signal is likely not spoofed"
     )
+
 
 @app.get("/")
 def read_root():
     return {"message": "You are using GNSS spoofing detection API"}
+
 
 @app.get("/health")
 def health_check():
