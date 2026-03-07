@@ -1,12 +1,13 @@
-from fastapi import FastAPI
-import joblib
+from fastapi import FastAPI, UploadFile, HTTPException, File, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ValidationError, Field
 from typing import Annotated
 from predict import predict
 import uvicorn
-from src import rinex_conversion as rx
 from pathlib import Path
-
+import pandas as pd
+import os
+from io import StringIO
 
 # Creating a FastAPI app
 app = FastAPI(
@@ -14,6 +15,19 @@ app = FastAPI(
     description="Predicts if a GNSS signal is spoofed/manipulated",
     version="1.0.0"
 )
+
+# Enable CORS for frontend applications
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Configure appropriately for production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Configuration
+ALLOWED_EXTENSIONS = {".csv"} # in future it will accept rinex files directly as well
+MAX_FILE_SIZE = int(os.getenv("MAX_FILE_SIZE", 50 * 1024 * 1024))  # 50MB
 
 # Defining input schema using Pydantic
 class DataInput(BaseModel):
@@ -62,18 +76,81 @@ class DataInput(BaseModel):
                 "n_missing_pr": 15
             }
         }
+ 
+# Defining Response Model with pydantic
+class PredictionResponse(BaseModel):
+    total_samples: int
+    spoofed_count: int
+    spoofing_ratio: float
+    is_spoofed: str
 
+# Class for validating uploaded file. File should be csv file and match with 'DataInput' schema.
+class ValidateFile:
+
+    def __init__(self, max_size: int = MAX_FILE_SIZE, allowed_extensions: set = ALLOWED_EXTENSIONS):
+        self.max_size = max_size
+        self.allowed_extensions = allowed_extensions
+
+    async def __call__(self, file: UploadFile = File(...)) -> UploadFile:
+
+        """
+        Validate file when used as a dependency.
+        """
+        file_extension = Path(file.filename).suffix.lower()
+
+        # Check extension
+        if file_extension not in self.allowed_extensions:
+            raise HTTPException(status_code=400, detail=f"File extension: {file_extension} not allowed")
+        
+        # Load content 
+        content = await file.read()
+        if len(content) > self.max_size:
+            raise HTTPException(status_code=400, detail=f"File exceeds maximum size of {self.max_size} bytes")
+        
+        # Validate file format. We are using pandas. It is faster if we have tens of thousands or more rows.
+        try:
+            text = content.decode("utf-8") 
+            df = pd.read_csv(StringIO(text))
+            records = df.to_dict(orient = "records")
+        except Exception as e:
+                raise HTTPException(400, f"Invalid CSV format: {str(e)}")
+ 
+        validated_rows = []
+        invalid_rows = []
+        for i, row in enumerate(records):
+            try:
+                validated_rows.append(DataInput(**row))
+            except ValidationError as e:
+                    invalid_rows.append({f"row": row, "errors": e.errors()})
+                
+        if invalid_rows:
+            raise HTTPException(status_code=422, detail=f"Row {i+1} validation error: {e.errors()}")
+
+        await file.seek(0)
+
+        return df
+            
+ 
+SPOOFING_THRESHOLD = 0.6
+
+@app.post("/predict-spoofing", response_model=PredictionResponse)
+async def start_prediction(df: pd.DataFrame = Depends(ValidateFile())):
+    prediction = predict(df)
+
+    spoofed_count = len(prediction[prediction["pred_attack"] == 1])
+    total_samples = len(prediction)
+    spoofing_ratio = round(spoofed_count/total_samples, 2)
+
+    return PredictionResponse(
+        total_samples=total_samples,
+        spoofed_count=spoofed_count,
+        spoofing_ratio=spoofing_ratio,
+        is_spoofed="Signal is likely spoofed" if spoofing_ratio > SPOOFING_THRESHOLD else "Signal is likely not spoofed"
+    )
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the Signal Spoofing Detection API."}
-
-
-@app.post("/predict", response_model=DataInput)
-def start_prediction():
-    
-    predict()
-
+    return {"message": "You are using GNSS spoofing detection API"}
 
 @app.get("/health")
 def health_check():
@@ -82,4 +159,6 @@ def health_check():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
+
+
