@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 import os
 from io import StringIO
-
+ 
 # Creating a FastAPI app
 app = FastAPI(
     title="GNSS Signal Spoofing Detector",
@@ -82,6 +82,7 @@ class PredictionResponse(BaseModel):
     total_samples: int
     spoofed_count: int
     spoofing_ratio: float
+    avg_spoofing_probability: float
     is_spoofed: str
 
 
@@ -127,11 +128,14 @@ class ValidateFile:
         if invalid_rows:
             raise HTTPException(status_code=422, detail="Invalid content in Uploaded File")
         
-        await file.seek(0)
+        #await file.seek(0)
         return df
-            
- 
+
+
+# Defining the threshold for the data to be considered spoofed. 
 SPOOFING_THRESHOLD = 0.6
+# To avoid small amount of outliers, which could be caused by anomalies we will set a minimum amount for spoofed samples.
+MIN_SPOOFED_SAMPLE = 10
 
 @app.post("/predict-spoofing", response_model=PredictionResponse)
 async def start_prediction(df: pd.DataFrame = Depends(ValidateFile())):
@@ -141,13 +145,15 @@ async def start_prediction(df: pd.DataFrame = Depends(ValidateFile())):
     total_samples = len(prediction)
     spoofing_ratio = round(spoofed_count/total_samples, 2)
     spoofed_samples = prediction[prediction["pred_attack"] == 1]
-    avg_spoofing_ratio = spoofed_samples["attack_probability"].mean()
+    avg_spoofing_probability = spoofed_samples["attack_probability"].mean()
 
     return PredictionResponse(
         total_samples = total_samples,
         spoofed_count = spoofed_count,
         spoofing_ratio = spoofing_ratio,
-        is_spoofed = "Signal is likely spoofed" if avg_spoofing_ratio > SPOOFING_THRESHOLD else "Signal is likely not spoofed"
+        avg_spoofing_probability = avg_spoofing_probability,
+        is_spoofed = "Signal is likely spoofed" if avg_spoofing_probability > SPOOFING_THRESHOLD and spoofed_count > MIN_SPOOFED_SAMPLE 
+        else "Signal is likely not spoofed"
     )
 
 
@@ -161,6 +167,15 @@ def health_check():
     """Health check endpoint to verify API is running"""
     return {"status": "healthy"}
 
+
+@app.get("/model-info")
+def model_info():
+    return {
+        "model": "GNSS Spoofing Detector",
+        "version": "1.0",
+        "threshold": SPOOFING_THRESHOLD,
+        "min-spoofed data": MIN_SPOOFED_SAMPLE
+    }
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
