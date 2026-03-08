@@ -40,8 +40,8 @@ class DataInput(BaseModel):
     phase: Annotated[float | None, Field(description="carrier phase of the given satellite")]
     doppler: Annotated[float | None, Field(description="Doppler shift of the signal")]
     snr: Annotated[float | None, Field(description="Signal to Noise ratio")]
-    time_s: Annotated[int | None, Field(description="Time in seconds")]
-    delta_t: Annotated[float | None, Field(description="Change in time")]
+    time_s: Annotated[int | None, Field(description="Time in seconds")] 
+    delta_t: Annotated[float | None, Field(description="Time differenece between epochs")]
     delta_pr: Annotated[float | None, Field(description="Change of the pseudorange")]
     pr_rate: Annotated[float | None, Field(description="The rate of change of the distance between the satellite and the reciever")]
     wavelength: Annotated[float | None, Field(description="Wavelength of the signal")]
@@ -49,7 +49,7 @@ class DataInput(BaseModel):
     snr_mean_5: Annotated[float | None, Field(description="Mean Signal to Noise ratio accross the last five epochs")]
     snr_std_5: Annotated[float | None, Field(description="Standard deviation of Signal to Noise ratio accross the last five epochs")]
     sat_count: Annotated[int | None, Field(description="Number of satellites visible in the given epoch")]
-    n_missing_pr: Annotated[int | None, Field(description="Number of missing pseudoranges")]
+    n_missing_pr: Annotated[int | None, Field(description="Number of missing pseudoranges (loss of signal)")]
 
 
     class Config:
