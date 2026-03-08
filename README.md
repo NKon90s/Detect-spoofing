@@ -19,7 +19,13 @@ To record data I used `U-center`, which is a free software developed by u-blox f
 
 ![u-center config](imgs/config.jpg)
 
-The `rinex_conversion.py` file can convert RINEX files to CSV, what we can feed to our machine learning modell. 
+Converting data recorded with u-center to RINEX format happened with RTKLIB, which is an opensource GNSS toolkit. You can read about RTKLIB [here](https://www.rtklib.com/rtklib_tutorial.htm). RINEX is a standardized ASCII file format used for storing and exchanging raw satellite navigation data.
+
+With `rinex_conversion.py` RINEX files can be converted to CSV, what can be fed to the machine learning modell.
+
+Since actually broadcasting spoofed signals is illegal and at the time of the research I did not have access to a safe enough laboratory environment, therefore the spoofed signals were created artificially with the help of `spoofing_simulation.py`. In the future the model could be improved with recording spoofed signals from an SDR and train the model on that data as well. 
+
+For **safety purposes** I haven't included the recorded GNSS data as location can be tracked back from the data set. If you'd like to test the code, then you need to record your own data. 
 
 ## How to Run
 
