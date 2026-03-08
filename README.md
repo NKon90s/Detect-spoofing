@@ -13,6 +13,8 @@ The easiest way to install and apply them is the `pip install` method. E.g: `pip
 
 ## Dataset 
 
+To capture GNSS signal data I used a NEO M8T module by u-blox. You can find the Module's documentation [here](https://www.u-blox.com/en/product/neolea-m8t-series). 
+
 The `rinex_conversion.py` file can convert RINEX files to CSV, what we can feed to our machine learning modell. 
 
 ## How to Run
