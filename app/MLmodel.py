@@ -126,7 +126,8 @@ class ValidateFile:
                     invalid_rows.append({f"row": row, "errors": e.errors()})
                 
         if invalid_rows:
-            raise HTTPException(status_code=422, detail="Invalid content in Uploaded File")
+            raise HTTPException(status_code=422, detail={"message": "Invalid rows found",
+                                                         "invalid_rows": invalid_rows[:10]})
         
         #await file.seek(0)
         return df
@@ -143,6 +144,8 @@ async def start_prediction(df: pd.DataFrame = Depends(ValidateFile())):
 
     spoofed_count = len(prediction[prediction["pred_attack"] == 1])
     total_samples = len(prediction)
+    if total_samples == 0:
+        raise HTTPException(400, "CSV file contains no data")
     spoofing_ratio = round(spoofed_count/total_samples, 2)
     spoofed_samples = prediction[prediction["pred_attack"] == 1]
     avg_spoofing_probability = spoofed_samples["attack_probability"].mean()
