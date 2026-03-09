@@ -19,16 +19,73 @@ To record data I used `U-center`, which is a free software developed by u-blox f
 
 ![u-center config](imgs/config.jpg)
 
-Converting data recorded with u-center to RINEX format happened with RTKLIB, which is an opensource GNSS toolkit. You can read about RTKLIB [here](https://www.rtklib.com/rtklib_tutorial.htm). RINEX is a standardized ASCII file format used for storing and exchanging raw satellite navigation data.
+Converting data recorded with u-center to RINEX format happened with `RTKLIB`, which is an opensource GNSS toolkit. You can read about RTKLIB [here](https://www.rtklib.com/rtklib_tutorial.htm). RINEX is a standardized ASCII file format used for storing and exchanging raw satellite navigation data.
 
 With `rinex_conversion.py` RINEX files can be converted to CSV, what can be fed to the machine learning modell.
 
-Since actually broadcasting spoofed signals is illegal and at the time of the research I did not have access to a safe enough laboratory environment, therefore the spoofed signals were created artificially with the help of `spoofing_simulation.py`. In the future the model could be improved with recording spoofed signals from an SDR and train the model on that data as well. 
+Since actually broadcasting spoofed signals is illegal and at the time of the research I did not have access to a safe enough laboratory environment, therefore the spoofed signals were created artificially with the help of `spoofing_simulation.py` (located in the src folder). In the future the model could be improved with recording spoofed signals from an SDR within a safe laboratory and train the model on that data as well. 
 
-For **safety purposes** I haven't included the recorded GNSS data as location can be tracked back from the data set. If you'd like to test the code, then you need to record your own data. 
+For **safety purposes** I haven't included the recorded GNSS data as location can be tracked back from the data set. If you'd like to test the code, then you need to record your own data and create your own spoofed samples.
+ 
+## Model Evaluation
 
-## How to Run
+The performance of the prediction model was evaluated using several complementary metrics and diagnostic plots. These metrics provide insight into the classification behavior of the model, its ability to discriminate between classes, and the trade-offs between precision and recall at different decision thresholds.
+
+### 1.Confusion Matrix
+
+The confusion matrix summarizes the classification results by comparing the predicted labels with the true labels. It provides a detailed breakdown of:
+
+- **True Positives (TP)** – correctly predicted positive instances  
+- **True Negatives (TN)** – correctly predicted negative instances  
+- **False Positives (FP)** – negative instances incorrectly classified as positive  
+- **False Negatives (FN)** – positive instances incorrectly classified as negative 
+
+[!confusion matrix](imgs/confusion_matrix.jpeg)
+
+### 2.ROC-curve
+
+The Receiver Operating Characteristic (ROC) curve illustrates the model’s ability to distinguish between classes across different classification thresholds. It plots:
+
+- **True Positive Rate (Sensitivity / Recall)** on the y-axis  
+- **False Positive Rate** on the x-axis  
+
+A model with strong discriminative ability will produce a curve that approaches the top-left corner of the plot. The ROC curve is commonly summarized using the **Area Under the Curve (AUC)**, where higher values indicate better overall classification performance.
+
+[!roc curve](imgs/ROC_curve.jpeg)
+
+### 3.PR-curve
+
+The Precision–Recall (PR) curve visualizes the trade-off between **precision** and **recall** across varying classification thresholds. This metric is particularly informative when dealing with **imbalanced datasets**, where the positive class occurs much less frequently than the negative class.
+
+- **Precision** measures the proportion of predicted positives that are actually correct.  
+- **Recall** measures the proportion of actual positives that are correctly identified.
+
+A higher area under the PR curve indicates a model that maintains strong precision while achieving high recall.
+
+[!pr curve](imgs/PR_curve.jpeg)
+
+### 4.F1-score vs threshold
+
+The F1-score represents the harmonic mean of precision and recall, providing a single metric that balances both measures. This plot shows how the **F1-score varies as the classification threshold changes**.
+
+Analyzing this curve helps identify the **optimal decision threshold** that maximizes the balance between precision and recall, which is particularly useful when the default threshold (e.g., 0.5) is not ideal for the application.
+
+[!f1 score](imgs/F1_vs_threshold.jpeg)
+
+### 5.Model Metrics
+
+In addition to graphical diagnostics, the model performance is summarized using key evaluation metrics such as:
+
+- **F1-score**
+- **PR-AUC**
+- **ROC-AUC**
+
+These metrics provide a quantitative summary of the model’s predictive capability and allow for comparison with alternative models or configurations.
+
+[!model metrics](imgs/Model_metrics.jpeg)
 
 ## Results
+
+## How to Run
 
 ## Folder Structure
