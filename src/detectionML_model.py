@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 # ============================================================
 # 1. Loading the data
 # ============================================================
-log_files = ["obs_Oct21log7_spoofed.csv", "obs_Oct27log3_spoofed.csv", "obs_Oct21log8_spoofed.csv", "obs_Oct27log1_spoofed.csv"]
+log_files = ["src/obs_Oct21log7_spoofed.csv", "src/obs_Oct27log3_spoofed.csv", "src/obs_Oct21log8_spoofed.csv", "src/obs_Oct27log1_spoofed.csv"]
 dfs = [pd.read_csv(f) for f in log_files]
 df = pd.concat(dfs, ignore_index=True)
  
@@ -190,9 +190,9 @@ print("Model saved as gnss_xgboost_model.joblib")
 
 
 
-# -------------------------------
-# Confusion Matrix
-# -------------------------------
+# ============================================================
+# 11. Confusion Matrix
+# ============================================================
 cm = confusion_matrix(y_test, y_pred)
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Clean", "Spoofed"])
 
@@ -216,7 +216,7 @@ True Positives  (Spoofed correctly identified): {tp}
 
 
 # ============================================================
-# 8. F1 / ROC-AUC / PR-AUC LINE PLOT (OPTION 2)
+# 12. F1 / ROC-AUC / PR-AUC LINE PLOT (OPTION 2)
 # ============================================================
 metric_names = ["F1-score", "PR-AUC", "ROC-AUC"]
 metric_values = [f1, pr_auc, roc_auc]
@@ -237,7 +237,7 @@ plt.tight_layout()
 plt.show()
 
 # ============================================================
-# 9. ROC CURVE
+# 13. ROC CURVE
 # ============================================================
 from sklearn.metrics import RocCurveDisplay, PrecisionRecallDisplay
 
@@ -250,7 +250,7 @@ plt.show()
 
 
 # ============================================================
-# 10. PRECISION-RECALL CURVE
+# 14. PRECISION-RECALL CURVE
 # ============================================================
 disp = PrecisionRecallDisplay.from_predictions(y_test, y_proba)
 disp.ax_.set_title("PR curve")
@@ -261,7 +261,7 @@ plt.show()
 
 
 # ============================================================
-# 11. F1-SCORE vs THRESHOLD CURVE
+# 15. F1-SCORE vs THRESHOLD CURVE
 # ============================================================
 thresholds = np.linspace(0, 1, 200)
 f1_scores = [f1_score(y_test, (y_proba > t).astype(int)) for t in thresholds]
@@ -269,18 +269,18 @@ f1_scores = [f1_score(y_test, (y_proba > t).astype(int)) for t in thresholds]
 plt.figure(figsize=(6.5,4))
 plt.plot(thresholds, f1_scores, label="F1-score")
 
-plt.xlabel("Decesion threshold")
+plt.xlabel("Decision threshold")
 plt.ylabel("F1-score")
 plt.title("F1-score vs threshold")
 plt.grid(True)
 
-# Legjobb pont
+# Best Score
 best_t = thresholds[np.argmax(f1_scores)]
 best_f1 = max(f1_scores)
 
 plt.scatter(best_t, best_f1, color="red", s=40, label=f"Best: t={best_t:.2f}, F1={best_f1:.3f}")
 
-# Legend kisebb betűmérettel
+# Legend smaller font size
 plt.legend(fontsize=9, loc="lower center")
 
 plt.tight_layout()
