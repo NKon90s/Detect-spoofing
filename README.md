@@ -40,7 +40,7 @@ The confusion matrix summarizes the classification results by comparing the pred
 - **False Positives (FP)** – negative instances incorrectly classified as positive  
 - **False Negatives (FN)** – positive instances incorrectly classified as negative 
 
-[!confusion matrix](imgs/confusion_matrix.jpeg)
+![confusion matrix](imgs/confusion_matrix.jpeg)
 
 ### 2.ROC-curve
 
@@ -51,7 +51,7 @@ The Receiver Operating Characteristic (ROC) curve illustrates the model’s abil
 
 A model with strong discriminative ability will produce a curve that approaches the top-left corner of the plot. The ROC curve is commonly summarized using the **Area Under the Curve (AUC)**, where higher values indicate better overall classification performance.
 
-[!roc curve](imgs/ROC_curve.jpeg)
+![roc curve](imgs/ROC_curve.jpeg)
 
 ### 3.PR-curve
 
@@ -62,7 +62,7 @@ The Precision–Recall (PR) curve visualizes the trade-off between **precision**
 
 A higher area under the PR curve indicates a model that maintains strong precision while achieving high recall.
 
-[!pr curve](imgs/PR_curve.jpeg)
+![pr curve](imgs/PR_curve.jpeg)
 
 ### 4.F1-score vs threshold
 
@@ -70,7 +70,7 @@ The F1-score represents the harmonic mean of precision and recall, providing a s
 
 Analyzing this curve helps identify the **optimal decision threshold** that maximizes the balance between precision and recall, which is particularly useful when the default threshold (e.g., 0.5) is not ideal for the application.
 
-[!f1 score](imgs/F1_vs_threshold.jpeg)
+![f1 score](imgs/F1_vs_threshold.jpeg)
 
 ### 5.Model Metrics
 
@@ -82,7 +82,7 @@ In addition to graphical diagnostics, the model performance is summarized using 
 
 These metrics provide a quantitative summary of the model’s predictive capability and allow for comparison with alternative models or configurations.
 
-[!model metrics](imgs/Model_metrics.jpeg)
+![model metrics](imgs/Model_metrics.jpeg)
 
 ## Results
 
