@@ -9,7 +9,7 @@ The aim of this project was to research the possiblities of detecting spoofing w
 
 For specific requirements and dependencies, please read the `requirements.txt` file.
 
-Use for example `pip install` method. E.g: `pip install pandas`
+Use for example `pip install` method. E.g:  `pip install -r requirements.txt`
 
 ## Dataset 
 
@@ -26,6 +26,8 @@ With `rinex_conversion.py` RINEX files can be converted to CSV, what can be fed 
 Since actually broadcasting spoofed signals is illegal and at the time of the research I did not have access to a safe enough laboratory environment, therefore the spoofed signals were created artificially with the help of `spoofing_simulation.py` (located in the src folder). In the future the model could be improved with recording spoofed signals from an SDR within a safe laboratory and train the model on that data as well. 
 
 For **safety purposes** I haven't included the recorded GNSS data as location can be tracked back from the data set. If you'd like to test the code, then you need to record your own data and create your own spoofed samples.
+
+Also exported model is 
 
 ## Columns of the dataset
 
@@ -105,7 +107,7 @@ In addition to graphical diagnostics, the model performance is summarized using 
 - **F1-score**
 - **PR-AUC**
 - **ROC-AUC**
-
+ 
 These metrics provide a quantitative summary of the model’s predictive capability and allow for comparison with alternative models or configurations.
 
 ![model metrics](imgs/Model_metrics.jpeg)
