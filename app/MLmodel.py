@@ -132,7 +132,7 @@ class ValidateFile:
         #await file.seek(0)
         return df
 
-
+ 
 # Defining the threshold for the data to be considered spoofed. 
 SPOOFING_THRESHOLD = 0.6
 # To avoid small amount of outliers, which could be caused by anomalies we will set a minimum amount for spoofed samples.
@@ -179,6 +179,11 @@ def model_info():
         "threshold": SPOOFING_THRESHOLD,
         "min-spoofed data": MIN_SPOOFED_SAMPLE
     }
+
+@app.get("/ping")
+def ping():
+    return {"message": "API running"}
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
