@@ -146,9 +146,14 @@ async def start_prediction(df: pd.DataFrame = Depends(ValidateFile())):
     total_samples = len(prediction)
     if total_samples == 0:
         raise HTTPException(400, "CSV file contains no data")
-    spoofing_ratio = round(spoofed_count/total_samples, 2)
+    
+    spoofing_ratio = float(round(spoofed_count/total_samples, 2))
+
     spoofed_samples = prediction[prediction["pred_attack"] == 1]
-    avg_spoofing_probability = spoofed_samples["attack_probability"].mean()
+    if spoofed_samples.empty:
+        avg_spoofing_probability = 0.0
+    else:
+        avg_spoofing_probability = float(round(spoofed_samples["attack_probability"].mean()),2)
 
     return PredictionResponse(
         total_samples = total_samples,
