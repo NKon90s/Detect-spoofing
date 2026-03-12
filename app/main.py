@@ -16,5 +16,5 @@ if uploaded_file and button:
         files={"file": uploaded_file}
     )
  
-    st.write(response.json())
+    st.write(response.json()) 
    
