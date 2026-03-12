@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 st.title("GNSS Spoofing Detector")
-
+ 
 uploaded_file = st.file_uploader("Upload a CSV file")
 
 button = st.button("Predict")
