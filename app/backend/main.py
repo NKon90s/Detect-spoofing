@@ -9,6 +9,13 @@ import pandas as pd
 import os
 from io import StringIO
  
+################################################
+#
+#  This API is for deploying the ML model used
+#  for predicting GNSS spoofing
+#
+################################################
+
 # Creating a FastAPI app
 app = FastAPI(
     title="GNSS Signal Spoofing Detector",

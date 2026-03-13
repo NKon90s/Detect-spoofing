@@ -1,6 +1,8 @@
 import streamlit as st
 import requests
 
+API_URL = "http://127.0.0.1:8000/predict-spoofing"
+
 st.title("GNSS Spoofing Detector")
  
 uploaded_file = st.file_uploader("Upload a CSV file")
@@ -12,7 +14,7 @@ if uploaded_file and button:
     files = {"file": uploaded_file.getvalue()}
 
     response = requests.post(
-        "http://127.0.0.1:8000/predict-spoofing", 
+        API_URL, 
         files={"file": uploaded_file}
     )
  
