@@ -1,0 +1,13 @@
+__pycache__
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.git
+.gitignore
+Dockerfile
+*.ipynb
+.ipynb_checkpoints/
+data/
+models/

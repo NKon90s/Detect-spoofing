@@ -14,8 +14,8 @@ dist/
 build/
 
 # Jupyter
-.ipynb_checkpoints/
-.ipynb
+ .ipynb_checkpoints/
+*.ipynb
 
 # Specific files
 *.csv
