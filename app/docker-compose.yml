@@ -6,7 +6,7 @@ services:
     container_name: gnss-api
     ports:
       - "8000:8000"
-
+ 
   streamlit:
     build: ./frontend
     container_name: gnss-streamlit
