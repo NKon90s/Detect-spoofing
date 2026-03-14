@@ -1,9 +1,23 @@
 
+# GNSS Spoofing Detection with Machine Learning
+
+This project investigates the detection of spoofed GNSS signals using machine learning techniques.
+
+The system processes raw satellite observations, extracts signal-based features, and uses an XGBoost model to classify signals as authentic or spoofed.
+
+Key components include:
+- GNSS data collection using a u-blox NEO-M8T receiver
+- RINEX data conversion and preprocessing
+- Synthetic spoofing simulation
+- Machine learning classification using XGBoost
+- Evaluation using ROC, PR, and F1 metrics
+
+
 ## Purpose of this project
 
 Global Navigation Satellite Systems (GNSS) have become a fundamental technological pillar of our everyday lives and critical infrastructures. From the navigation of autonomous vehicles, through positioning procedures in air traffic, to the time synchronization of financial transactions, numerous applications rely on the precise position and time information provided by GNSS. Parallel to the widespread adoption of these systems, however, intentional interference activities aimed at disrupting or falsifying satellite signals have become increasingly common. Signal spoofing represents a particularly serious security risk, as the counterfeit signals can transmit navigation information that is almost indistinguishable from genuine signals and appears authentic, making the manipulation extremely difficult for the system to detect.
 
-The aim of this project was to research the possiblities of detecting spoofing with machine learning algorithms, especially `XGBoost` algorithm. The results are promising. Machnie learning can be of help in identifying spoofed signals, especially combined with other detection techniques (for example physical methods like using multiple antennas).
+The aim of this project was to research the possibilities of detecting spoofing with machine learning algorithms, especially `XGBoost` algorithm. The results are promising. Machine learning can be of help in identifying spoofed signals, especially combined with other detection techniques (for example physical methods like using multiple antennas).
 
 ## Requirements 
 
@@ -13,7 +27,7 @@ Use for example `pip install` method. E.g:  `pip install -r requirements.txt`
 
 ## Dataset 
 
-To capture GNSS data I used a `NEO M8T` signal reciever module developed by `u-blox`. You can find the documentation of the module [here](https://www.u-blox.com/en/product/neolea-m8t-series). 
+To capture GNSS data I used a `NEO M8T` signal receiver module developed by `u-blox`. You can find the documentation of the module [here](https://www.u-blox.com/en/product/neolea-m8t-series). 
 
 To record data I used `U-center`, which is a free software developed by u-blox for their GNSS modules. For the model training `RAWX` data were recorded.
 
@@ -54,6 +68,18 @@ The prediction model was trained on CSV data that contained the following column
 - `n_missing_pr`: Number of missing pseudoranges (loss of signal)
 
 The prediction model needs these columns to make a prediction as well. So the API accepts a `CSV file` only if it contains these columns.
+
+## Model
+
+The detection model was trained using XGBoost algorithm.
+
+Training process:
+
+1. GNSS observations were converted to CSV features
+2. Spoofed samples were generated using the `spoofing_simulation.py` module
+3. The dataset was split into training and validation sets
+4. The model was trained using XGBoost classification
+5. Performance was evaluated using ROC-AUC, PR-AUC and F1-score
  
 ## Model Evaluation
 
