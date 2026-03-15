@@ -160,7 +160,7 @@ async def start_prediction(df: pd.DataFrame = Depends(ValidateFile())):
     if spoofed_samples.empty:
         avg_spoofing_probability = 0.0
     else:
-        avg_spoofing_probability = float(round(spoofed_samples["attack_probability"].mean()),2)
+        avg_spoofing_probability = float(round(spoofed_samples["attack_probability"].mean(),2))
 
     return PredictionResponse(
         total_samples = total_samples,
@@ -198,6 +198,6 @@ def ping():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 
 
