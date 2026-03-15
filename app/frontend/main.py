@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-API_URL = "http://127.0.0.1:8000/predict-spoofing"
+API_URL = "http://api:8000/predict-spoofing"
 
 st.title("GNSS Spoofing Detector")
  
@@ -17,6 +17,11 @@ if uploaded_file and button:
         API_URL, 
         files={"file": uploaded_file}
     )
- 
-    st.write(response.json()) 
+
+
+    if response.status_code == 200:
+        st.write(response.json())
+    else:
+        st.error(f"API Error {response.status_code}")
+        st.text(response.text)
    
