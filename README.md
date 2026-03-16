@@ -35,7 +35,7 @@ To record data I used `U-center`, which is a free software developed by u-blox f
 
 Converting data recorded with u-center to RINEX format happened with `RTKLIB`, which is an opensource GNSS toolkit. You can read about RTKLIB [here](https://www.rtklib.com/rtklib_tutorial.htm). RINEX is a standardized ASCII file format used for storing and exchanging raw satellite navigation data.
 
-With `rinex_conversion.py` RINEX files can be converted to CSV, what can be fed to the machine learning modell.
+With `rinex_conversion.py` RINEX files can be converted to CSV, which can then be used as input for the machine learning model.
 
 Since actually broadcasting spoofed signals is illegal and at the time of the research I did not have access to a safe enough laboratory environment, therefore the spoofed signals were created artificially with the help of `spoofing_simulation.py` (located in the src folder). In the future the model could be improved with recording spoofed signals from an SDR within a safe laboratory and train the model on that data as well. 
 
@@ -142,7 +142,62 @@ These metrics provide a quantitative summary of the model’s predictive capabil
 
 ## Architecture
 
+The pipeline consists of three sub-systems:
+
+1. **Signal Processing System**
+   - GNSS data recording
+   - Conversion to RINEX format
+
+2. **Data Conversion System**
+   - RINEX → CSV feature extraction
+
+3. **Spoofing Detection System**
+   - ML prediction API
+   - Streamlit interface
+
+The whole pipeline is the following:
+
 ![model architecture](imgs/Architecture.jpg)
 
 ## How to Run
- 
+
+Clone the repository. 
+
+```git clone https://github.com/NKon90s/Detect-spoofing.git```
+
+Before running make sure you perform the following steps, so you have a valid CSV file that you can feed to the Prediction Model. 
+
+1. Record your GNSS signal with NEO M8T or a module that can record the same data. You need to record RAWX observation data.
+2. Transform the recorded data into a RINEX file format. I did it with RTKLIB but you can use other tools as well.
+3. Transform the RINEX data into CSV file with `rinex_conversion.py` in **/src** folder. You can find example for how to do it in `main.py` file, also located in the **/src** folder.
+4. Since you have to train the model `detectionML_model.py` in **/src** folder, you also need spoofed data. You can either record spoofed signals you created with an SDR in a secure environment or you can use the `spoofing_simulation.py` file, located in **/src** folder. If you navigate to the src folder you can also find example for how to use `spoofing_simulation.py` in the `main.py` file. Save the trained model to app/backend. 
+
+If you performed these prerequisite steps, then you have a trained model and data to use. 
+
+You should also have Docker Desktop installed. 
+
+Navigate to `/app` folder. 
+
+```docker-compose up```
+
+Now you can open Streamlit in the browser. It will likely be `http://localhost:8501` and use it.
+
+You should be able to see something like this:
+
+**If sample is not spoofed:**
+
+![not spoofed sample](imgs/App_demo_1.jpg)
+
+**If sample is spoofed:**
+
+![spoofed sample](imgs/App_demo_2.jpg)
+
+
+## Future Work
+
+- Collect real spoofed GNSS signals using SDR in a controlled lab
+- Extend model to detect jamming attacks
+- Evaluate additional models (Random Forest, Neural Networks)
+- Real-time spoofing detection pipeline
+- Multi-antenna detection integration
+- Improved UI (The current one is basic only for demo purposes.)
