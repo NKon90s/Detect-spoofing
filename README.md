@@ -41,7 +41,7 @@ Since actually broadcasting spoofed signals is illegal and at the time of the re
 
 For **safety purposes** I haven't included the recorded GNSS data as location can be tracked back from the data set. If you'd like to test the code, then you need to record your own data and create your own spoofed samples.
 
-Also exported model is 
+The trained model used for prediction is not uploaded either, since XGBoost models can also leak location data from the data it's trained on.
 
 ## Columns of the dataset
 
@@ -80,6 +80,8 @@ Training process:
 3. The dataset was split into training and validation sets
 4. The model was trained using XGBoost classification
 5. Performance was evaluated using ROC-AUC, PR-AUC and F1-score
+
+**Note:** the trained model is not uploaded to the repo due to security considerations. It may leak location data (or partial location data) I do not intend to share publicly. With `detectionML_model.py` in src folder you can generate and export a trained model. 
  
 ## Model Evaluation
 
@@ -133,11 +135,14 @@ In addition to graphical diagnostics, the model performance is summarized using 
 - **F1-score**
 - **PR-AUC**
 - **ROC-AUC**
- 
+  
 These metrics provide a quantitative summary of the model’s predictive capability and allow for comparison with alternative models or configurations.
 
 ![model metrics](imgs/Model_metrics.jpeg)
 
+## Architecture
+
+![model architecture](imgs/Architecture.jpg)
 
 ## How to Run
-
+ 
